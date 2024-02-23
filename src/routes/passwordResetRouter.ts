@@ -3,7 +3,7 @@ import nodemailer from 'nodemailer';
 import crypto from 'crypto';
 import {prisma} from '../../prisma';
 const bcrypt = require('bcrypt');   
-require('dotenv').config();
+
 
 
 const router = express.Router();

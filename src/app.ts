@@ -24,7 +24,7 @@ app.use((req, res, next) => {
 });
 //SLASH
 app.use('/user', passwordResetRouter);
-app.use('/api', userRouter);
+app.use('/user', userRouter);
 
 
 app.get("/", (req, res) => {

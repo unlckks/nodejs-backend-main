@@ -2,6 +2,8 @@ import express from 'express';
 import {prisma} from '../../prisma';
 const bcrypt = require('bcrypt');
 const router = express.Router();
+const jwt =require('jsonwebtoken');
+const JWT_SECRET = "my_secret_key"
 
 // Register a new user
 router.post('/signup', async (req, res) => {
@@ -15,10 +17,12 @@ router.post('/signup', async (req, res) => {
       }
       const hashedPassword= await bcrypt.hash(password, 10);
   
-      // Create a new user
-      await prisma.user.create({ data: { username, email, password:hashedPassword } });
-      
-      return res.status(201).json({ message: 'User registered successfully' });
+      // register  a new user
+    const user =  await prisma.user.create({ data: { username, email, password:hashedPassword } });
+      // create jwt 
+      const token = jwt.sign({ userId: user.id }, JWT_SECRET);
+
+      return res.status(201).json({ message: 'User registered successfully',token });
     } catch (error) {
       console.error(error);
       return res.status(500).json({ error: 'Internal Server Error' });
@@ -39,12 +43,14 @@ router.post('/login', async (req, res) => {
     const isMatch = await bcrypt.compare(password, user.password);
     // Compare the provided password with the stored password
     if (!isMatch) {
-    
       return res.status(401).json({ error: 'Invalid username or password' });
     }
     // Exclude password and other sensitive fields before sending
     const { password: _, ...safeUser } = user;
-    return res.status(200).json({ message: 'Login successful', user: safeUser});
+    //create jwt 
+    const token = jwt.sign( {userId: user.id} ,JWT_SECRET);
+
+    return res.status(200).json({ message: 'Login successful', user: safeUser , token});
   } catch (error) {
     console.error(error);
     return res.status(500).json({ error: 'Internal Server Error' });

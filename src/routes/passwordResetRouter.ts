@@ -98,7 +98,6 @@ router.post('/password-reset/confirm', async (req, res) => {
 
 
   // 3. Hash the new password
-  // const hashedPassword = await bcrypt.hash(password, 10);
 const hashedPassword = await bcrypt.hash(password, 10);
   // 4. Update the user's password in the database
   await prisma.user.update({
